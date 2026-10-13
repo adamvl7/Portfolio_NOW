@@ -1,78 +1,24 @@
-import {
-  Briefcase,
-  Code,
-  Trophy,
-  GraduationCap,
-  Rocket,
-  Star,
-} from "lucide-react"
+import { Briefcase, Code, Users } from "lucide-react"
 import type { TimelineItem } from "@/components/ui/radial-orbital-timeline"
+import { workExperience } from "@/data/work"
 
-export const experienceData: TimelineItem[] = [
-  {
-    id: 1,
-    title: "Software Engineer",
-    date: "2024–Now",
-    content: "Building scalable frontend systems and design infrastructure. Leading the migration of a legacy codebase to Next.js App Router.",
-    category: "Work",
-    icon: Briefcase,
-    relatedIds: [2, 5],
-    status: "in-progress",
-    energy: 85,
-  },
-  {
-    id: 2,
-    title: "SWE Intern",
-    date: "Summer 2023",
-    content: "Contributed to the core product at a Series B startup. Shipped a redesigned onboarding flow that increased activation by 28%.",
-    category: "Work",
-    icon: Code,
-    relatedIds: [1, 3],
-    status: "completed",
-    energy: 100,
-  },
-  {
-    id: 3,
-    title: "HackMIT Winner",
-    date: "Oct 2023",
-    content: "First place in the Developer Tools track. Built an AI-powered code review assistant in 24 hours.",
-    category: "Achievement",
-    icon: Trophy,
-    relatedIds: [2, 4],
-    status: "completed",
-    energy: 100,
-  },
-  {
-    id: 4,
-    title: "CS Degree",
-    date: "2020–2024",
-    content: "Bachelor of Science in Computer Science. Focus on systems, algorithms, and human-computer interaction.",
-    category: "Education",
-    icon: GraduationCap,
-    relatedIds: [3],
-    status: "completed",
-    energy: 100,
-  },
-  {
-    id: 5,
-    title: "Open Source",
-    date: "2022–Now",
-    content: "Maintainer of 3 open-source projects. 500+ GitHub stars across repos. Active contributor to the React ecosystem.",
-    category: "Community",
-    icon: Star,
-    relatedIds: [1, 6],
-    status: "in-progress",
-    energy: 70,
-  },
-  {
-    id: 6,
-    title: "Side Projects",
-    date: "2023–Now",
-    content: "Building and shipping 2–3 side projects per year. Focused on developer tools, productivity apps, and design systems.",
-    category: "Projects",
-    icon: Rocket,
-    relatedIds: [5],
-    status: "in-progress",
-    energy: 60,
-  },
-]
+const icons: Record<string, TimelineItem["icon"]> = {
+  "walmart-connect": Briefcase,
+  "archv-ai": Code,
+  "ai-uci": Users,
+}
+
+export const experienceData: TimelineItem[] = workExperience.map((job, i) => ({
+  id: i + 1,
+  title: job.company,
+  subtitle: `${job.role} · ${job.location}`,
+  date: job.dates,
+  content: `${job.role} at ${job.company}`,
+  bullets: job.bullets,
+  tags: job.tags,
+  category: "Work",
+  icon: icons[job.id] ?? Briefcase,
+  relatedIds: [],
+  status: job.current ? "in-progress" : "completed",
+  energy: 85,
+}))

@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useRef } from "react"
-import { ArrowRight, Link, Zap } from "lucide-react"
+import { ArrowRight, Link } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,7 +9,10 @@ export interface TimelineItem {
   id: number
   title: string
   date: string
+  subtitle?: string
   content: string
+  bullets?: string[]
+  tags?: string[]
   category: string
   icon: React.ElementType
   relatedIds: number[]
@@ -27,6 +30,7 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
   const [autoRotate, setAutoRotate] = useState<boolean>(true)
   const [pulseEffect, setPulseEffect] = useState<Record<number, boolean>>({})
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null)
+  const [inView, setInView] = useState<boolean>(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const orbitRef = useRef<HTMLDivElement>(null)
   const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({})
@@ -66,12 +70,20 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
   }
 
   useEffect(() => {
-    if (!autoRotate) return
+    const el = containerRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!autoRotate || !inView) return
     const timer = setInterval(() => {
       setRotationAngle((prev) => Number(((prev + 0.3) % 360).toFixed(3)))
     }, 50)
     return () => clearInterval(timer)
-  }, [autoRotate])
+  }, [autoRotate, inView])
 
   const centerViewOnNode = (nodeId: number) => {
     const nodeIndex = timelineData.findIndex((item) => item.id === nodeId)
@@ -112,7 +124,7 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
 
   return (
     <div
-      className="w-full h-[600px] flex flex-col items-center justify-center relative overflow-hidden"
+      className="w-full h-[680px] flex flex-col items-center justify-center relative overflow-hidden"
       ref={containerRef}
       onClick={handleContainerClick}
     >
@@ -188,7 +200,7 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
 
                 {/* Expanded card */}
                 {isExpanded && (
-                  <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-64 border-border bg-popover/95 backdrop-blur-lg shadow-xl overflow-visible z-50">
+                  <Card className="absolute top-20 left-1/2 -translate-x-1/2 w-80 border-border bg-popover/95 backdrop-blur-lg shadow-xl overflow-visible z-50">
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-px h-3 bg-border" />
                     <CardHeader className="pb-2 p-4">
                       <div className="flex justify-between items-center gap-2">
@@ -198,25 +210,33 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
                         <span className="text-xs font-mono text-muted-foreground">{item.date}</span>
                       </div>
                       <CardTitle className="text-sm mt-2 text-foreground">{item.title}</CardTitle>
+                      {item.subtitle && (
+                        <p className="text-xs text-muted-foreground mt-0.5">{item.subtitle}</p>
+                      )}
                     </CardHeader>
                     <CardContent className="text-xs text-muted-foreground p-4 pt-0">
-                      <p>{item.content}</p>
+                      {item.bullets ? (
+                        <ul className="space-y-1.5 list-disc pl-4 marker:text-muted-foreground leading-relaxed">
+                          {item.bullets.map((b) => (
+                            <li key={b}>{b}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>{item.content}</p>
+                      )}
 
-                      <div className="mt-3 pt-3 border-t border-border">
-                        <div className="flex justify-between items-center text-xs mb-1">
-                          <span className="flex items-center gap-1">
-                            <Zap size={10} />
-                            Progress
-                          </span>
-                          <span className="font-mono">{item.energy}%</span>
+                      {item.tags && (
+                        <div className="mt-3 flex flex-wrap gap-1">
+                          {item.tags.map((t) => (
+                            <span
+                              key={t}
+                              className="px-2 py-0.5 text-[10px] rounded-full border border-border text-foreground"
+                            >
+                              {t}
+                            </span>
+                          ))}
                         </div>
-                        <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary rounded-full"
-                            style={{ width: `${item.energy}%` }}
-                          />
-                        </div>
-                      </div>
+                      )}
 
                       {item.relatedIds.length > 0 && (
                         <div className="mt-3 pt-3 border-t border-border">

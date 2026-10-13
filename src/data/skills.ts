@@ -6,22 +6,26 @@ export interface SkillGroup {
 export const skillGroups: SkillGroup[] = [
   {
     category: "Languages",
-    skills: ["TypeScript", "JavaScript", "Python", "Rust", "SQL", "HTML/CSS"],
+    skills: ["Python", "Go", "C/C++", "Java", "JavaScript", "TypeScript", "Kotlin", "Verilog", "SQL", "HTML", "CSS", "Shell scripting"],
   },
   {
-    category: "Frontend",
-    skills: ["React", "Next.js", "Framer Motion", "Tailwind CSS", "Radix UI", "React Native"],
+    category: "AI & Data",
+    skills: ["AI/ML", "LLM", "PostgreSQL", "Supabase"],
   },
   {
-    category: "Backend",
-    skills: ["Node.js", "PostgreSQL", "Redis", "REST APIs", "GraphQL", "Docker"],
+    category: "Web",
+    skills: ["React", "Next.js", "Tailwind CSS", "FastAPI", "REST APIs"],
   },
   {
-    category: "Design",
-    skills: ["Figma", "Design Systems", "Accessibility", "Typography", "Motion Design"],
+    category: "Cloud & Infrastructure",
+    skills: ["AWS", "Docker", "Kubernetes", "Kubernetes Operators (CRDs)", "Kubebuilder", "controller-runtime"],
   },
   {
-    category: "Tooling",
-    skills: ["Git", "Vite", "Webpack", "Storybook", "Vercel", "CI/CD"],
+    category: "Developer Tools",
+    skills: ["Git", "GitHub", "VS Code", "IntelliJ", "Arduino IDE", "Figma", "Uvicorn", "Swagger UI"],
+  },
+  {
+    category: "Other",
+    skills: ["Fluent in Vietnamese"],
   },
 ]

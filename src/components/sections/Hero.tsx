@@ -10,6 +10,7 @@ import { LiquidMetalButton } from "@/components/ui/liquid-metal-button"
 import { GooeyText } from "@/components/ui/gooey-text-morphing"
 import { useTheme } from "next-themes"
 import Image from "next/image"
+import { links } from "@/data/links"
 
 const hellos = [
   "Hello",       // English
@@ -37,6 +38,11 @@ const fadeUp = {
   }),
 }
 
+const scrollTo = (id: string) =>
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
+
+const openLink = (url: string) => window.open(url, "_blank", "noopener,noreferrer")
+
 export function Hero() {
   const [mounted, setMounted] = useState(false)
   const { resolvedTheme } = useTheme()
@@ -56,7 +62,7 @@ export function Hero() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-foreground/[0.025] rounded-full blur-3xl pointer-events-none" />
 
       {/* Hero content — centered single column */}
-      <div className="relative flex-1 flex flex-col items-center justify-center text-center max-w-4xl mx-auto w-full px-6 pt-24 pb-12">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center max-w-4xl mx-auto w-full px-6 pt-24 pb-12">
 
         {/* Status badge */}
         <motion.div
@@ -106,7 +112,7 @@ export function Hero() {
           custom={0.4}
           className="max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed mb-10"
         >
-          Computer Engineering @ UC Irvine &apos;27. Focusing in software and AI.
+          Computer Science @ UC Irvine &apos;27. Focusing in software and AI.
         </motion.p>
 
         {/* CTA buttons */}
@@ -121,47 +127,49 @@ export function Hero() {
             <>
               <LiquidMetalButton
                 label="View Projects"
-                onClick={() => document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => scrollTo("projects")}
               />
               <LiquidMetalButton
                 label="Get in Touch"
-                onClick={() => document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => scrollTo("contact")}
               />
               <div className="flex items-center gap-2">
-                <a href="https://github.com/yourname" target="_blank" rel="noopener noreferrer">
-                  <LiquidMetalButton viewMode="icon" label="GitHub" />
-                </a>
-                <a href="https://linkedin.com/in/yourname" target="_blank" rel="noopener noreferrer">
-                  <LiquidMetalButton viewMode="icon" label="LinkedIn" />
-                </a>
+                <LiquidMetalButton
+                  viewMode="icon"
+                  label="GitHub"
+                  icon={<GitHubIcon className="w-4 h-4" />}
+                  onClick={() => openLink(links.github)}
+                />
+                <LiquidMetalButton
+                  viewMode="icon"
+                  label="LinkedIn"
+                  icon={<LinkedInIcon className="w-4 h-4" />}
+                  onClick={() => openLink(links.linkedin)}
+                />
               </div>
             </>
           ) : (
             <>
               <LiquidButton
                 size="xl"
-                onClick={() => document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => scrollTo("projects")}
               >
                 View Projects
                 <ArrowRight className="w-4 h-4" />
               </LiquidButton>
               <LiquidButton
                 size="xl"
-                onClick={() => document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => scrollTo("contact")}
               >
                 Get in Touch
               </LiquidButton>
               <div className="flex items-center gap-2">
-                <a href="https://github.com/yourname" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                  <LiquidButton size="icon">
-                    <GitHubIcon className="w-4 h-4" />
-                  </LiquidButton>
-                </a>
-                <a href="https://linkedin.com/in/yourname" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                  <LiquidButton size="icon">
-                    <LinkedInIcon className="w-4 h-4" />
-                  </LiquidButton>
-                </a>
+                <LiquidButton size="icon" aria-label="GitHub" onClick={() => openLink(links.github)}>
+                  <GitHubIcon className="w-4 h-4" />
+                </LiquidButton>
+                <LiquidButton size="icon" aria-label="LinkedIn" onClick={() => openLink(links.linkedin)}>
+                  <LinkedInIcon className="w-4 h-4" />
+                </LiquidButton>
               </div>
             </>
           )}
@@ -178,27 +186,20 @@ export function Hero() {
         <ContainerScroll
           titleComponent={
             <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase mb-4">
-              Selected Work
+              Resume
             </p>
           }
         >
-          <div className="relative w-full h-full bg-surface-2 rounded-2xl overflow-hidden">
+          <div className="relative w-full h-full bg-surface-2 rounded-2xl overflow-hidden flex justify-center">
             <Image
-              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1400&q=80"
-              alt="Project showcase"
-              fill
-              className="object-cover object-top"
+              src="/projects/resume.png"
+              alt="Adam Le's resume"
+              width={1854}
+              height={2400}
+              sizes="(max-width: 768px) 90vw, 520px"
+              className="h-full w-auto max-w-none object-contain"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
-            <div className="absolute top-4 left-4 right-4 h-8 bg-surface/80 backdrop-blur-sm rounded-lg border border-border flex items-center gap-2 px-3">
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-                <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-              </div>
-              <div className="flex-1 h-4 bg-surface-2/60 rounded mx-2" />
-            </div>
           </div>
         </ContainerScroll>
       </motion.div>

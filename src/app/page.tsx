@@ -8,6 +8,7 @@ import { Skills } from "@/components/sections/Skills"
 import { Experience } from "@/components/sections/Experience"
 import { Contact } from "@/components/sections/Contact"
 import { Dock } from "@/components/ui/dock"
+import { links } from "@/data/links"
 
 const dockItems = [
   {
@@ -33,12 +34,12 @@ const dockItems = [
   {
     icon: GitBranch,
     label: "GitHub",
-    href: "https://github.com/yourname",
+    href: links.github,
   },
   {
     icon: FileText,
     label: "Resume",
-    href: "/resume.pdf",
+    href: links.resume,
   },
 ]
 

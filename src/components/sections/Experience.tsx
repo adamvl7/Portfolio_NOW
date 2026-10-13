@@ -40,7 +40,7 @@ export function Experience() {
           viewport={{ once: true }}
           className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4"
         >
-          The journey so far
+          Where I&apos;ve worked
         </motion.h2>
 
         <motion.p
@@ -51,7 +51,7 @@ export function Experience() {
           viewport={{ once: true }}
           className="text-muted-foreground mb-2 hidden md:block"
         >
-          Click any node to explore a milestone. Click elsewhere to resume rotation.
+          Click any node to see the role and details. Click elsewhere to resume rotation.
         </motion.p>
 
         {/* Desktop: orbital */}
@@ -93,8 +93,21 @@ export function Experience() {
                 {/* Content */}
                 <div className="pb-8 pt-1">
                   <p className="text-xs font-mono text-muted-foreground mb-1">{item.date}</p>
-                  <h3 className="text-sm font-semibold text-foreground mb-1">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.content}</p>
+                  <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
+                  {item.subtitle && (
+                    <p className="text-xs text-muted-foreground mb-2">{item.subtitle}</p>
+                  )}
+                  {item.bullets ? (
+                    <ul className="space-y-1.5 list-disc pl-4 marker:text-muted-foreground">
+                      {item.bullets.map((b) => (
+                        <li key={b} className="text-sm text-muted-foreground leading-relaxed">
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted-foreground leading-relaxed">{item.content}</p>
+                  )}
                 </div>
               </motion.div>
             )

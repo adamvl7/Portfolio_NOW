@@ -9,12 +9,16 @@ interface LiquidMetalButtonProps {
   label?: string
   onClick?: () => void
   viewMode?: "text" | "icon"
+  icon?: React.ReactNode
 }
+
+const IDLE_SPEED = 0.6
 
 export function LiquidMetalButton({
   label = "Get Started",
   onClick,
   viewMode = "text",
+  icon,
 }: LiquidMetalButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isPressed, setIsPressed] = useState(false)
@@ -24,6 +28,7 @@ export function LiquidMetalButton({
   const shaderMount = useRef<any>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const rippleId = useRef(0)
+  const visibleRef = useRef(true)
 
   const dimensions = useMemo(() => {
     if (viewMode === "icon") {
@@ -76,7 +81,10 @@ export function LiquidMetalButton({
               u_offsetY: -0.1,
             },
             undefined,
-            0.6,
+            IDLE_SPEED, // keeps animating when idle
+            0,
+            1, // minPixelRatio: don't supersample at 2x (big GPU saving)
+            200_000, // maxPixelCount: tiny canvas, cap it
           )
         }
       } catch (error) {
@@ -86,7 +94,18 @@ export function LiquidMetalButton({
 
     loadShader()
 
+    // Pause the animation while the button is scrolled out of view
+    const node = shaderRef.current
+    const observer = node
+      ? new IntersectionObserver(([entry]) => {
+          visibleRef.current = entry.isIntersecting
+          shaderMount.current?.setSpeed?.(entry.isIntersecting ? IDLE_SPEED : 0)
+        })
+      : null
+    if (node) observer?.observe(node)
+
     return () => {
+      observer?.disconnect()
       if (shaderMount.current?.destroy) {
         shaderMount.current.destroy()
         shaderMount.current = null
@@ -102,14 +121,14 @@ export function LiquidMetalButton({
   const handleMouseLeave = () => {
     setIsHovered(false)
     setIsPressed(false)
-    shaderMount.current?.setSpeed?.(0.6)
+    shaderMount.current?.setSpeed?.(visibleRef.current ? IDLE_SPEED : 0)
   }
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (shaderMount.current?.setSpeed) {
       shaderMount.current.setSpeed(2.4)
       setTimeout(() => {
-        shaderMount.current?.setSpeed?.(isHovered ? 1 : 0.6)
+        shaderMount.current?.setSpeed?.(!visibleRef.current ? 0 : isHovered ? 1 : IDLE_SPEED)
       }, 300)
     }
 
@@ -133,7 +152,9 @@ export function LiquidMetalButton({
           {/* Label layer */}
           <div style={{ position: "absolute", top: 0, left: 0, width: dimensions.width, height: dimensions.height, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, transformStyle: "preserve-3d", transition: easing, transform: "translateZ(20px)", zIndex: 30, pointerEvents: "none" }}>
             {viewMode === "icon" && (
-              <Sparkles size={16} style={{ color: "#999", filter: "drop-shadow(0px 1px 2px rgba(0,0,0,0.5))", transition: easing }} />
+              <span style={{ display: "flex", color: "#999", filter: "drop-shadow(0px 1px 2px rgba(0,0,0,0.5))", transition: easing }}>
+                {icon ?? <Sparkles size={16} />}
+              </span>
             )}
             {viewMode === "text" && (
               <span style={{ fontSize: 14, color: "#999", fontWeight: 400, textShadow: "0px 1px 2px rgba(0,0,0,0.5)", transition: easing, whiteSpace: "nowrap" }}>
@@ -143,12 +164,12 @@ export function LiquidMetalButton({
           </div>
 
           {/* Dark inner face */}
-          <div style={{ position: "absolute", top: 0, left: 0, width: dimensions.width, height: dimensions.height, transformStyle: "preserve-3d", transition: easing, transform: `translateZ(10px) ${isPressed ? "translateY(1px) scale(0.98)" : ""}`, zIndex: 20 }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: dimensions.width, height: dimensions.height, transformStyle: "preserve-3d", transition: easing, transform: `translateZ(10px) ${isPressed ? "translateY(1px) scale(0.98)" : ""}`, zIndex: 20, pointerEvents: "none" }}>
             <div style={{ width: dimensions.innerWidth, height: dimensions.innerHeight, margin: 2, borderRadius: 100, background: "linear-gradient(180deg,#202020 0%,#000 100%)", boxShadow: isPressed ? "inset 0px 2px 4px rgba(0,0,0,0.4)" : "none", transition: "box-shadow 0.15s cubic-bezier(0.4,0,0.2,1)" }} />
           </div>
 
           {/* Shader outer ring */}
-          <div style={{ position: "absolute", top: 0, left: 0, width: dimensions.width, height: dimensions.height, transformStyle: "preserve-3d", transition: easing, transform: `translateZ(0px) ${isPressed ? "translateY(1px) scale(0.98)" : ""}`, zIndex: 10 }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: dimensions.width, height: dimensions.height, transformStyle: "preserve-3d", transition: easing, transform: `translateZ(0px) ${isPressed ? "translateY(1px) scale(0.98)" : ""}`, zIndex: 10, pointerEvents: "none" }}>
             <div style={{
               height: dimensions.height, width: dimensions.width, borderRadius: 100,
               boxShadow: isPressed

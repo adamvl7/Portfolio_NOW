@@ -1,17 +1,18 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { cn } from "@/lib/utils"
 
 const navLinks = [
-  { label: "About", href: "#about" },
-  { label: "Projects", href: "#projects" },
-  { label: "Skills", href: "#skills" },
-  { label: "Experience", href: "#experience" },
-  { label: "Contact", href: "#contact" },
+  { label: "About", href: "/#about" },
+  { label: "Projects", href: "/#projects" },
+  { label: "Skills", href: "/#skills" },
+  { label: "Experience", href: "/#experience" },
+  { label: "Contact", href: "/#contact" },
 ]
 
 export function Navbar() {
@@ -39,23 +40,23 @@ export function Navbar() {
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Logo */}
-          <a
-            href="#home"
+          <Link
+            href="/#home"
             className="text-sm font-semibold tracking-tight text-foreground hover:text-muted-foreground transition-colors"
           >
             AL<span className="text-muted-foreground">.</span>
-          </a>
+          </Link>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
                 className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -89,14 +90,14 @@ export function Navbar() {
           >
             <nav className="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-1">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
                   className="px-3 py-3 text-sm text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors"
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
             </nav>
           </motion.div>

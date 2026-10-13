@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { Mail, FileText } from "lucide-react"
 import { GitHubIcon, LinkedInIcon } from "@/components/icons"
 import { SlideButton } from "@/components/ui/slide-button"
+import { links } from "@/data/links"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -18,22 +19,22 @@ const fadeUp = {
 const socialLinks = [
   {
     label: "GitHub",
-    href: "https://github.com/yourname",
+    href: links.github,
     icon: GitHubIcon,
   },
   {
     label: "LinkedIn",
-    href: "https://linkedin.com/in/yourname",
+    href: links.linkedin,
     icon: LinkedInIcon,
   },
   {
     label: "Email",
-    href: "mailto:your@email.com",
+    href: `mailto:${links.email}`,
     icon: Mail,
   },
   {
     label: "Resume",
-    href: "/resume.pdf",
+    href: links.resume,
     icon: FileText,
   },
 ]
@@ -48,7 +49,7 @@ export function Contact() {
   const handleMailto = () => {
     const subject = encodeURIComponent(`Hello from ${form.name}`)
     const body = encodeURIComponent(`From: ${form.name} <${form.email}>\n\n${form.message}`)
-    window.open(`mailto:your@email.com?subject=${subject}&body=${body}`, "_blank")
+    window.location.href = `mailto:${links.email}?subject=${subject}&body=${body}`
   }
 
   return (

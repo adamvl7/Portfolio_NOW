@@ -20,6 +20,7 @@ export function GooeyText({
 }: GooeyTextProps) {
   const text1Ref = React.useRef<HTMLSpanElement>(null)
   const text2Ref = React.useRef<HTMLSpanElement>(null)
+  const wrapRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
     let textIndex = texts.length - 1
@@ -27,20 +28,26 @@ export function GooeyText({
     let morph = 0
     let cooldown = cooldownTime
     let animId: number
+    let idle = false
 
     const setMorph = (fraction: number) => {
       if (text1Ref.current && text2Ref.current) {
-        text2Ref.current.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`
+        text2Ref.current.style.filter = `blur(${Math.min(8 / fraction - 8, 24)}px)`
         text2Ref.current.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`
         fraction = 1 - fraction
-        text1Ref.current.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`
+        text1Ref.current.style.filter = `blur(${Math.min(8 / fraction - 8, 24)}px)`
         text1Ref.current.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`
       }
     }
 
     const doCooldown = () => {
       morph = 0
-      if (text1Ref.current && text2Ref.current) {
+      // Static phase: write styles once, and drop the SVG filter so the browser
+      // stops re-rasterizing it every frame.
+      if (idle) return
+      idle = true
+      if (text1Ref.current && text2Ref.current && wrapRef.current) {
+        wrapRef.current.style.filter = "none"
         text2Ref.current.style.filter = ""
         text2Ref.current.style.opacity = "100%"
         text1Ref.current.style.filter = ""
@@ -49,6 +56,10 @@ export function GooeyText({
     }
 
     const doMorph = () => {
+      if (idle && wrapRef.current) {
+        wrapRef.current.style.filter = "url(#threshold)"
+        idle = false
+      }
       morph -= cooldown
       cooldown = 0
       let fraction = morph / morphTime
@@ -103,7 +114,7 @@ export function GooeyText({
         </defs>
       </svg>
 
-      <div className="flex items-center justify-center" style={{ filter: "url(#threshold)" }}>
+      <div ref={wrapRef} className="flex h-full w-full items-center justify-center" style={{ filter: "url(#threshold)" }}>
         <span
           ref={text1Ref}
           className={cn(
